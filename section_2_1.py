@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn import linear_model
 import matplotlib.pyplot as plt
 
 
@@ -12,8 +11,8 @@ noise = np.random.normal(0, 0.01, N)
 x = np.reshape(np.sort(rn, axis=0), (N, 1))
 
 degree_list = [i for i in range(1, degree_p)]
-mu_list = [x[i] for i in range(1, len(x))]
-
+mu_list = np.reshape([x[i] for i in range(1, len(x))], (N-1,1))
+print(mu_list)
 def get_y(x, noise):
     return [ float((np.sin(4*np.pi*x[i]) + noise[i])) for i in range(len(x))]
 true_y = np.array(get_y(x, noise))
@@ -34,13 +33,11 @@ def make_design(x, basisfn, basisfn_locs=None): # basisfn_locs is acts as other 
 design_A = make_design(x, polynomial_basis_fn, degree_list)
 design_B = make_design(x, gaussian_basis_fn, mu_list)
 
-
 # Generate Weights using alternative matrix equation given in section 2.2, page 2, footnote 2 as is independant of degree_p 
 def weight_gen(matrix, N, penalty, y):
     return  (matrix.T).dot( np.linalg.inv(( matrix.dot(matrix.T) + (penalty*np.identity(N)) )) ).dot(y)
 w_A = weight_gen(design_A, N, penalty, true_y)
 w_B = weight_gen(design_B, N, penalty, true_y)
-
 ####### Generate Test Data ###########################################################################################
 N=15 # # of test pts
 rn = np.random.uniform(0, 1, N)
@@ -54,7 +51,6 @@ design_B_test = make_design(x_test, gaussian_basis_fn, mu_list)
 # match test data to w_n values from training data
 y_hat_A = design_A_test.dot(w_A) 
 y_hat_B = design_B_test.dot(w_B)
-
 plt.plot(x_test, y_hat_A, color='y')
 plt.plot(x_test, y_hat_B, color='r')
 
