@@ -10,6 +10,7 @@ N = 150
 class_name = []
 for i in META:
     class_name.append(i)
+print(class_name)
 class_data = [[] for i in range(len(class_name))]
 class_mean = [[] for i in range(len(class_name))]
 class_cov = [[] for i in range(len(class_name))]
@@ -56,9 +57,13 @@ for i in range(N_c):
         y = float((w_star.T).dot(dat))
         y_proj[i].append(y)
 
+####### Testing a Fixed Data Point #######
+testdata = np.array([4,4,1,0.5]) # for the purpose of comparing with softmax, this point is clearly versicolor flower
+testpred = w_star.T.dot(testdata)
+plt.hist(testpred, 10, facecolor='black') # plotting the points position on histogram to illustrate classification
+
 ####### Plot Histogram #######
 bins = 50
-print(y_proj[0])
 plt.hist(y_proj[0], bins, facecolor='g', alpha=0.5, label=class_name[0])
 plt.hist(y_proj[1], bins, facecolor='r', alpha=0.5, label=class_name[1])
 plt.hist(y_proj[2], bins, facecolor='b', alpha=0.5, label=class_name[2])

@@ -29,20 +29,31 @@ for i in META: # sift through dictionary of METADATA
         class_data[list(META).index(i)].append(temp) # assign matrix to specific class data
 training = jnp.array(training) # need to concat into jnp array
 
-####### Constant Definitions ########
-l_rate = 0.75 # learning rate
-its = 500
-inputs= training.T
+####### Edited sklearn PCA example ########
+####### LINK: https://scikit-learn.org/stable/auto_examples/decomposition/plot_pca_vs_lda.html#sphx-glr-auto-examples-decomposition-plot-pca-vs-lda-py
+from sklearn.decomposition import PCA
+
+X = training
 targets=jnp.array([int(i/50) for i in range(150)])
 
-key=random.PRNGKey(0)
-key, W_key = random.split(key,2)
-[classes, dim]= 3,4
+pca = PCA(n_components=2)
+X_r = pca.fit(X).transform(X)
 
-Winit= random.normal(W_key, (classes, dim+1))
+plt.figure()
+colors = ['green', 'red', 'blue']
+lw = 2
 
-W2, Whist, losshist = lf.grad_descent(Winit, inputs, targets, classes, l_rate, its)
+for color, i, target_name in zip(colors, [0, 1, 2], class_name):
+    plt.scatter(X_r[targets == i, 0], X_r[targets == i, 1], color=color, alpha=.8, lw=lw,
+                label=class_name[i])
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+plt.title('PCA of IRIS dataset')
 
-test = jnp.reshape(jnp.array([4,4,1,0.5]), (1,4)).T
-weights =  np.around(lf.softmax_prob(W2, test),3)
-print(weights)
+####### plotting porjections ########
+test = jnp.reshape(jnp.array([4,4,1,0.5]), (1,4)) # non-T test data
+transf = pca.transform(test) # generate 2D weights for projections
+score = pca.explained_variance_ratio_
+print(score)
+plt.scatter(transf[0][0], transf[0][1], color='black')
+
+plt.show()
