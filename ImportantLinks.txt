@@ -1,2 +1,0 @@
-https://github.com/scikit-learn/scikit-learn/blob/0fb307bf3/sklearn/model_selection/_split.py#L2029
-
